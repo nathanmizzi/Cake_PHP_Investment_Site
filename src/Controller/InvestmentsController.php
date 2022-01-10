@@ -27,13 +27,11 @@ class InvestmentsController extends AppController
 
             $investmentsTable = $this->fetchTable('investments');
 
-            $data = [];
-
             $fileObject = $this->request->getData('imagePath');
             $partialTargetDir = dirname($_SERVER['PHP_SELF']).'/img/uploads/'.$fileObject->getClientFilename();
             $fullTargetDir = $_SERVER['DOCUMENT_ROOT'].$partialTargetDir;
-            $fileObject->moveTo($fullTargetDir);
 
+            $data = [];
             $data['ticker_id'] = $this->request->getData('ticker_id');
             $data['shares'] = trim(strip_tags($this->request->getData('shares')));
             $data['boughtAt'] = trim(strip_tags($this->request->getData('boughtAt')));
@@ -44,6 +42,9 @@ class InvestmentsController extends AppController
             $newInvestment = $investmentsTable->newEntity($data);
 
             if($investmentsTable->save($newInvestment)){
+
+                $fileObject->moveTo($fullTargetDir);
+
                 $this->Flash->success("The Investment has been saved.");
 
                 return $this->redirect(['action' => 'index']);

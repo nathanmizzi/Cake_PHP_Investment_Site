@@ -22,7 +22,13 @@ class investmentsTable extends Table{
             ->numeric('boughtAt','Bought At must be numeric!')
             ->greaterThan('boughtAt', 0, 'Bought at needs to be greater than 0!')
             ->allowEmptyString('notes')
-            ->minLength('notes',20,'Notes must be more then 20 characters');
+            ->minLength('notes',20,'Notes must be more then 20 characters')
+            ->add('imagePath', [
+                'validExtension' => [
+                    'rule' => ['extension',[ 'jpeg', 'png', 'jpg']],
+                    'message' => __('Must be a valid file extension')
+                ]
+            ]);
 
         return $validator;
     }
