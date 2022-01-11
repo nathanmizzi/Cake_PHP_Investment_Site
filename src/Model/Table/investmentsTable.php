@@ -37,6 +37,8 @@ class investmentsTable extends Table{
     public function initialize(array $config): void{
 
         $this->belongsTo('tickers');
+        $this->belongsTo('users');
+        $this->belongsTo('shares');
 
         $this->addBehavior('Timestamp', [
             'events' => [

@@ -29,25 +29,30 @@
                             <?php
                             if(isset($loggedInUser)){?>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="<?= $this->Url->build('/Investments/add') ?>">Add Investments</a>
+                                    <a class="nav-link" href="<?= $this->Url->build('/Investments/homepage') ?>">HomePage</a>
                                 </li>
                             <?php } ?>
                             
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?= $this->Url->build('/Investments/index') ?>">View Investments</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?= $this->Url->build('/Users/index') ?>">View Users</a>
-                            </li>
-
                             <?php
 
                                 if(isset($loggedInUser)){
 
-                                  echo '<li class="nav-item"><a class="nav-link" href="'.$this->Url->build("/users/logout").'">Log-out</a></li>';
+                                    echo '<li class="nav-item"><a class="nav-link" href="'.$this->Url->build("/Investments/myInvestments").'">My Investments</a></li>';
+
+                                    echo '<li class="nav-item"><a class="nav-link" href="'.$this->Url->build("/users/index").'">User List</a></li>';
+
+                                    echo '<li class="nav-item"><a class="nav-link" href="'.$this->Url->build("/users/logout").'">Log-out</a></li>';
                                 
                                 }else{
+                                    ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="<?= $this->Url->build('/Investments/index') ?>">View Investments</a>
+                                        </li>
+                                    <?php
+
                                     echo '<li class="nav-item"><a class="nav-link" href="'.$this->Url->build("/users/login").'">Log-in</a></li>';
+
+                                    echo '<li class="nav-item"><a class="nav-link" href="'.$this->Url->build("/users/add").'">Register</a></li>';
                                 }
                             ?>
                                 

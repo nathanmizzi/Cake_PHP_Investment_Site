@@ -11,6 +11,6 @@ class PagesController extends AppController
     }
 
     public function index() {
-        return $this->redirect(array('controller' => 'investments', 'action' => 'add'));
+        return $this->redirect(array('controller' => 'investments', 'action' => 'homepage'));
 	}
 }

@@ -357,8 +357,6 @@ src/Model/Table/investmentsTable.php
 /tags
 /composer.lock
 /phpunit.xml
-/vendor
-/vendors
 /composer.phar
 *.mo
 debug.log
@@ -397,3 +395,4 @@ Thumbs.db
 nbproject/*
 # Visual Studio Code
 .vscode
+src/Controller/InvestmentsController.php

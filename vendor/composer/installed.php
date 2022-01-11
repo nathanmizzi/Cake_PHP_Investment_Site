@@ -1,11 +1,11 @@
 <?php return array(
     'root' => array(
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => NULL,
+        'reference' => 'ecd3f3a545e987337a89b13968a6fb4a0399d2ae',
         'name' => 'cakephp/app',
         'dev' => true,
     ),
@@ -20,12 +20,12 @@
             'dev_requirement' => true,
         ),
         'cakephp/app' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => NULL,
+            'reference' => 'ecd3f3a545e987337a89b13968a6fb4a0399d2ae',
             'dev_requirement' => false,
         ),
         'cakephp/authentication' => array(
@@ -279,6 +279,15 @@
             'aliases' => array(),
             'reference' => 'd56bf6102915de5702778fe20f2de3b2fe570b5b',
             'dev_requirement' => true,
+        ),
+        'harvesthq/chosen' => array(
+            'pretty_version' => 'v1.8.7',
+            'version' => '1.8.7.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../harvesthq/chosen',
+            'aliases' => array(),
+            'reference' => 'ad86732b668627c131e61ee8f0e6e9ed52e4db8d',
+            'dev_requirement' => false,
         ),
         'jasny/twig-extensions' => array(
             'pretty_version' => 'v1.3.0',
