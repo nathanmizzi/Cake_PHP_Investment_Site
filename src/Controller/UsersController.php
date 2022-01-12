@@ -18,7 +18,7 @@ class UsersController extends AppController
         
         if ($result->isValid()) {
             // redirect to /articles after login success
-            $redirect = $this->redirect(['action' => 'index']);
+            $redirect = $this->redirect(array('controller' => 'investments', 'action' => 'homepage'));
         }
         // display error if user submitted and authentication failed
         if ($this->request->is('post') && !$result->isValid()) {
@@ -67,7 +67,7 @@ class UsersController extends AppController
             $newUser = $usersTable->newEntity($data);
 
             if($usersTable->save($newUser)){
-                $this->Flash->success("The Investment has been saved.");
+                $this->Flash->success("The User has been saved.");
 
                 return $this->redirect(['action' => 'index']);
                 

@@ -38,7 +38,8 @@ class investmentsTable extends Table{
 
         $this->belongsTo('tickers');
         $this->belongsTo('users');
-        $this->belongsTo('shares');
+        $this->hasMany('investmentshares');
+        $this->hasMany('likes');
 
         $this->addBehavior('Timestamp', [
             'events' => [

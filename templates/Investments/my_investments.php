@@ -40,8 +40,28 @@ echo '<div class="row row-cols-1 row-cols-md-4 g-4">';
                             echo '<p class="card-text bg bg-gray">Trade Owner: '.$investment->user->firstName.' '.$investment->user->lastName.'</p>';
                         }
 
-                        echo '<hr>';
                         if($loggedInUser->id == $investment->user_id){
+
+                            $likes = 0;
+
+                            foreach($allLikes as $like){
+                                if($like->investment_id == $investment->id){
+                                    $likes++;
+                                }
+                            }
+
+                            echo '<hr>';
+
+                            $listLikedUsersLink = $this->Url->build("/investments/listLikedUsers/".$investment->id);
+
+                            if($likes != 0){
+                                echo '<p>Investment Likes: <a href="'.$listLikedUsersLink.'">'.$likes.'</a></p>';
+                            }else{
+                                echo '<p>Investment Likes: '.$likes.'</p>';
+                            }
+
+                            echo '<hr>';
+
                             $deleteLink = $this->Url->build("/investments/delete/".$investment->id);
                             echo '<a href="'.$deleteLink.'" class="btn btn-danger">Delete</a>';
 

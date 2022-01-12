@@ -22,6 +22,9 @@ class InvestmentsController extends AppController
 	}
 
     public function myInvestments(){
+
+        $likesTable = $this->fetchTable('likes')->find()->contain(["users","investments"])->toArray();
+
         $investmentsTable = $this->fetchTable('investments')->find()
         ->contain(['tickers'])
         ->contain(['users'])
@@ -29,6 +32,7 @@ class InvestmentsController extends AppController
         ->where(['investments.user_id' => $this->loggedInUser->id])
         ->all();
         
+        $this->set("allLikes", $likesTable);
         $this->set("allInvestments", $investmentsTable);
     }
 
@@ -46,23 +50,38 @@ class InvestmentsController extends AppController
 
     public function homepage(){
 
+        $likesTable = $this->fetchTable('likes')->find()->contain(["users","investments"])->toArray();
+        $this->set("allLikes", $likesTable);
+
+        //pr($likesTable);
+        //die;
+
+        //load tickers for future use
         $tickersTable = $this->fetchTable('tickers');
-
         $tickers = $tickersTable->find('list')->toArray();
-
-        $userInvestmentsTable = $this->fetchTable('investments')->find()
-            ->contain(['tickers'])
-            ->contain(['users'])
-            ->order(['created' => 'DESC'])
-            ->where(['OR' => [['privacy' => 0], ['investments.user_id' => $this->loggedInUser->id]]])
-            ->all();
-
-        $this->set("allInvestments", $userInvestmentsTable);
-
         $this->set("tickers", $tickers);
 
-        $usersTable = $this->fetchTable('users')->find('list')->toArray();
+        //getting public and user-made investments
+        $investmentsTable = $this->fetchTable('investments')->find()
+        ->contain(['tickers','users'])
+        ->order(['created' => 'DESC'])
+        ->where(['OR' => [['privacy' => 0], ['investments.user_id' => $this->loggedInUser->id]]])
+        ->all();
 
+        //getting shared likes
+        $investmentSharesTable = $this->fetchTable('investmentshares')->find()
+        ->contain(['users','investments','investments.tickers'])
+        ->where(['investmentshares.user_id' => $this->loggedInUser->id])
+        ->all();
+
+        $this->set("publicInvestments", $investmentsTable);
+        $this->set("sharedInvestments", $investmentSharesTable);
+
+        //Gets user to share to
+        $usersTable = $this->fetchTable('users')
+        ->find('list')
+        ->where(['email !=' => $this->loggedInUser->email])
+        ->toArray();
         $this->set("allUsers", $usersTable);
 
         if($this->request->is('post')){
@@ -145,7 +164,6 @@ class InvestmentsController extends AppController
                 
             }else{
                 $errors = $investmentToEdit->getErrors();
-                //pr($errors);
         
                 $error_messages = "";
                 foreach ($errors as $value) {
@@ -155,7 +173,60 @@ class InvestmentsController extends AppController
                 $this->Flash->error("Something wrong happened<br>$error_messages", ['escape' => false]);
             }
 
+            return $this->redirect(['action' => 'homepage']);
         }
+
+    }
+
+    public function like($investmentID){
+
+        $likesTable = $this->fetchTable("likes");
+
+        $data = [];
+
+        $data['investment_id'] = $investmentID;
+        $data['user_id'] = $this->loggedInUser->id;
+
+        $newlike = $likesTable->newEntity($data);
+
+        if($likesTable->save($newlike)){
+
+            $this->Flash->success("The Like has been added.");
+
+            return $this->redirect(['action' => 'homepage']);
+            
+        }else {
+            $this->Flash->error("Couldn't add like");
+        }
+
+        return $this->redirect(['action' => 'homepage']);
+    }
+
+    public function dislike($investmentID){
+
+        $likesTable = $this->fetchTable("likes");
+
+        $likeToDelete = $likesTable->get([$investmentID,$this->loggedInUser->id]);
+
+        if ($likesTable->delete($likeToDelete))
+            $this->Flash->success("Like has been removed!");
+        else
+            $this->Flash->error("Couldn't remove like!");
+
+        return $this->redirect(['action' => 'homepage']);
+    }
+
+    public function listLikedUsers($investmentID){
+
+        $likesTable = $this->fetchTable("likes")->find()
+        ->contain(["users","investments"])
+        ->where(['investment_id' => $investmentID])
+        ->toArray();
+
+        //pr($likesTable);
+        //die;
+
+        $this->set("likedBy", $likesTable);
 
     }
 
@@ -163,7 +234,14 @@ class InvestmentsController extends AppController
 
         if($this->request->is('post')){
 
-            $sharesTable = $this->fetchTable('shares');
+            $sharesTable = $this->fetchTable('investmentshares');
+
+            $query = $sharesTable->find()->select(['investment_id','user_id'])->where(['investment_id' => $investmentID,'user_id' => $this->request->getData('user_id')])->first();
+
+            if($query != null){
+                $this->Flash->error("Share Already Exists!");
+                return $this->redirect(['action' => 'homepage']);
+            }
 
             $data = $this->request->getData();
             $data['investment_id'] = $investmentID;
@@ -179,7 +257,6 @@ class InvestmentsController extends AppController
                 
             }else {
                 $errors = $newShare->getErrors();
-                //pr($errors);
         
                 $error_messages = "";
                 foreach ($errors as $value) {
@@ -188,6 +265,8 @@ class InvestmentsController extends AppController
         
                 $this->Flash->error("Something wrong happened<br>$error_messages", ['escape' => false]);
             }
+
+            return $this->redirect(['action' => 'homepage']);
 
         }
 
