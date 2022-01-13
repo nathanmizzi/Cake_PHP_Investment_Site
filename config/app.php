@@ -374,6 +374,34 @@ return [
             'url' => env('LOG_QUERIES_URL', null),
             'scopes' => ['queriesLog'],
         ],
+        'investment' => [
+            'className' => 'File',
+            'path' => LOGS,
+            'file' => 'investment',
+            'scopes' => ['investment'],
+            'levels' => ['info', 'error'],
+        ],
+        'like' => [
+            'className' => 'File',
+            'path' => LOGS,
+            'file' => 'like',
+            'scopes' => ['like'],
+            'levels' => ['info', 'error'],
+        ],
+        'login' => [
+            'className' => 'File',
+            'path' => LOGS,
+            'file' => 'login',
+            'scopes' => ['login'],
+            'levels' => ['info', 'error'],
+        ],
+        'logout' => [
+            'className' => 'File',
+            'path' => LOGS,
+            'file' => 'logout',
+            'scopes' => ['logout'],
+            'levels' => ['info', 'error'],
+        ],
     ],
 
     /*

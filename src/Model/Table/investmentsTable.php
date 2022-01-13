@@ -11,6 +11,7 @@ class investmentsTable extends Table{
     public function validationDefault(Validator $validator): Validator
     {
         $validator
+            ->requirePresence('user_id', 'User Id is required!')
             ->requirePresence('ticker_id')
             ->notBlank('ticker_id', 'Ticker is required')
             ->requirePresence('shares')
@@ -23,6 +24,7 @@ class investmentsTable extends Table{
             ->greaterThan('boughtAt', 0, 'Bought at needs to be greater than 0!')
             ->allowEmptyString('notes')
             ->minLength('notes',20,'Notes must be more then 20 characters')
+            ->requirePresence('imagePath', 'Image is required!')
             ->add('imagePath', [
                 'validExtension' => [
                     'rule' => ['extension',[ 'jpeg', 'png', 'jpg']],

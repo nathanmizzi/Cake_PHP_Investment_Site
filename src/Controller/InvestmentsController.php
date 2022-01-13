@@ -89,6 +89,7 @@ class InvestmentsController extends AppController
             $investmentsTable = $this->fetchTable('investments');
             
             $fileObject = $this->request->getData('imagePath');
+
             $partialTargetDir = dirname($_SERVER['PHP_SELF']).'/img/uploads/'.$fileObject->getClientFilename();
             $fullTargetDir = $_SERVER['DOCUMENT_ROOT'].$partialTargetDir;
 
@@ -116,16 +117,19 @@ class InvestmentsController extends AppController
 
                 $this->Flash->success("The Investment has been saved.");
 
+                $this->log('Investment Added Succesfully!','info', ['scope' => ['investment']]);
+
                 return $this->redirect(['action' => 'index']);
                 
             }else {
                 $errors = $newInvestment->getErrors();
-                //pr($errors);
         
                 $error_messages = "";
                 foreach ($errors as $value) {
                     $error_messages .= array_values($value)[0]."<br>";
                 }
+
+                $this->log("Failed To Add Investment!",'error', ['scope' => ['investment']]);
         
                 $this->Flash->error("Something wrong happened<br>$error_messages", ['escape' => false]);
             }
@@ -189,13 +193,28 @@ class InvestmentsController extends AppController
 
         $newlike = $likesTable->newEntity($data);
 
+        $query = $likesTable->find()->select(['investment_id','user_id'])->where(['investment_id' => $investmentID,'user_id' => $this->loggedInUser->id])->first();
+
+        if($query != null){
+
+            $this->log('Couldn\'t add like','error', ['scope' => ['like']]);
+
+            $this->Flash->error("Like Already Exists!");
+
+            return $this->redirect(['action' => 'homepage']);
+        }
+
         if($likesTable->save($newlike)){
+
+            $this->log('Like Added Succesfully!','info', ['scope' => ['like']]);
 
             $this->Flash->success("The Like has been added.");
 
             return $this->redirect(['action' => 'homepage']);
             
         }else {
+            $this->log('Couldn\'t add like','error', ['scope' => ['like']]);
+
             $this->Flash->error("Couldn't add like");
         }
 
@@ -206,14 +225,28 @@ class InvestmentsController extends AppController
 
         $likesTable = $this->fetchTable("likes");
 
-        $likeToDelete = $likesTable->get([$investmentID,$this->loggedInUser->id]);
+        $query = $likesTable->find()->select(['investment_id','user_id'])->where(['investment_id' => $investmentID,'user_id' => $this->loggedInUser->id])->first();
 
-        if ($likesTable->delete($likeToDelete))
-            $this->Flash->success("Like has been removed!");
-        else
+        if($query != null){
+
+            $likeToDelete = $likesTable->get([$investmentID,$this->loggedInUser->id]);
+
+            if ($likesTable->delete($likeToDelete)){
+                $this->log('Disliked Succesfully!','info', ['scope' => ['like']]);
+                $this->Flash->success("Like has been removed!");
+            }
+            else{
+                $this->log('Couldn\'t remove like','error', ['scope' => ['like']]);
+                $this->Flash->error("Couldn't remove like!");
+            }
+
+            return $this->redirect(['action' => 'homepage']);
+
+        }else{
+            $this->log('Couldn\'t remove like','error', ['scope' => ['like']]);
             $this->Flash->error("Couldn't remove like!");
-
-        return $this->redirect(['action' => 'homepage']);
+            return $this->redirect(['action' => 'homepage']);
+        }
     }
 
     public function listLikedUsers($investmentID){
@@ -222,9 +255,6 @@ class InvestmentsController extends AppController
         ->contain(["users","investments"])
         ->where(['investment_id' => $investmentID])
         ->toArray();
-
-        //pr($likesTable);
-        //die;
 
         $this->set("likedBy", $likesTable);
 

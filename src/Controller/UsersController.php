@@ -6,8 +6,9 @@ class UsersController extends AppController
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
-        $this->Authentication->addUnauthenticatedActions(['login', 'add']);
+        $this->Authentication->addUnauthenticatedActions(['login', 'add', 'loginWithFb']);
     }
+
 
     public function login()
     {
@@ -18,12 +19,23 @@ class UsersController extends AppController
         
         if ($result->isValid()) {
             // redirect to /articles after login success
+            $this->log('Logged-In Succesfully!','info', ['scope' => ['login']]);
             $redirect = $this->redirect(array('controller' => 'investments', 'action' => 'homepage'));
         }
         // display error if user submitted and authentication failed
         if ($this->request->is('post') && !$result->isValid()) {
+            $this->log('Failed to Log-in!','error', ['scope' => ['login']]);
             $this->Flash->error(__('Invalid username or password'));
         }
+    }
+
+    public function loginWithFb(){
+        //Do Ajax Request To API
+        
+        $name = $_POST['firstname'];
+
+        echo "$name recieved";
+        die;
     }
 
     public function logout()
@@ -33,7 +45,11 @@ class UsersController extends AppController
 
         if ($result->isValid()) {
             $this->Authentication->logout();
+            $this->log('Logged-Out Succesfully!','info', ['scope' => ['logout']]);
+
             return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+        }else{
+            $this->log('Failed to Logged-Out!','error', ['scope' => ['logout']]);
         }
     }
 
