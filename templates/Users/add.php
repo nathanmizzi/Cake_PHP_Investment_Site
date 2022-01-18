@@ -1,12 +1,7 @@
 <h1 class="text-center mt-4">Add User</h1>
 
-<?php
 
-if(isset($roles)){
-
-    ?>
-
-    <?= $this->Form->create(); ?>
+<?= $this->Form->create(); ?>
 
 <div class='row'>
 
@@ -30,21 +25,11 @@ if(isset($roles)){
         <?= $this->Form->control("password", ['placeholder' => "Your Password",'label' => false, 'class' =>"form-control"]); ?>
     </div>
 
-    <div class='row mt-3'>
-            <p class='m-0'>Role</p>
-            <?= $this->Form->control('role_id', ['options' => $roles, 'label' => false ,'class' => 'form-control']); ?>
-    </div>
-
     <div class="row text-center mt-3">
             <?= $this->Form->submit(__('Add'), ['class' =>"btn btn-primary"]); ?>
     </div>
 
 </div>
 
-    <?= $this->Form->end(); ?>
+<?= $this->Form->end(); ?>
 
-    <?php
-
-}
-
-?>

@@ -19,22 +19,45 @@ class UsersController extends AppController
         
         if ($result->isValid()) {
             // redirect to /articles after login success
-            $this->log('Logged-In Succesfully!','info', ['scope' => ['login']]);
+            $this->log('Logged-In Succesfully!, User: '.$this->loggedInUser->email.', User ID: '.$this->loggedInUser->id.', IP Address: '.$_SERVER['REMOTE_ADDR'],'info', ['scope' => ['login']]);
             $redirect = $this->redirect(array('controller' => 'investments', 'action' => 'homepage'));
         }
         // display error if user submitted and authentication failed
         if ($this->request->is('post') && !$result->isValid()) {
-            $this->log('Failed to Log-in!','error', ['scope' => ['login']]);
+            $this->log('Failed to Log-in!, IP Address: '.$_SERVER['REMOTE_ADDR'],'error', ['scope' => ['login']]);
             $this->Flash->error(__('Invalid username or password'));
         }
     }
 
-    public function loginWithFb(){
-        //Do Ajax Request To API
-        
-        $name = $_POST['firstname'];
+    public function loginWithGoogle(){    
 
-        echo "$name recieved";
+        $firstname = $_POST['firstname'];
+        $lastname = $_POST['lastname'];
+        $email = $_POST['email'];
+        $roleId = $_POST['roleId'];
+        $password = $_POST['password'];
+
+        $usersTable = $this->fetchTable('users');
+        $data = $this->request->getData();
+
+        $data['firstName'] = trim(strip_tags($_POST['firstname']));
+        $data['lastName'] = trim(strip_tags($_POST['lastname']));
+        $data['role_id'] = $_POST['roleId'];
+        $data['username'] = trim(strip_tags($_POST['email']));
+        $data['password'] = $_POST['password'];
+
+        $newUser = $usersTable->newEntity($data);
+
+        $query = $usersTable->find('all')
+        ->where(['users.email' => "$email"])->first();
+
+        if($query == null){
+            if($usersTable->save($newUser))
+                echo "Account Created";
+        }else{
+            echo "Account Already Exists";
+        }
+
         die;
     }
 
@@ -44,12 +67,12 @@ class UsersController extends AppController
         // regardless of POST or GET, redirect if user is logged in
 
         if ($result->isValid()) {
+            $this->log('Logged-Out Succesfully!, User: '.$this->loggedInUser->email.', User ID: '.$this->loggedInUser->id.', IP Address: '.$_SERVER['REMOTE_ADDR'],'info', ['scope' => ['logout']]);
             $this->Authentication->logout();
-            $this->log('Logged-Out Succesfully!','info', ['scope' => ['logout']]);
 
             return $this->redirect(['controller' => 'Users', 'action' => 'login']);
         }else{
-            $this->log('Failed to Logged-Out!','error', ['scope' => ['logout']]);
+            $this->log('Failed to Log-Out!, User: '.$this->loggedInUser->email.', User ID: '.$this->loggedInUser->id.', IP Address: '.$_SERVER['REMOTE_ADDR'],'error', ['scope' => ['logout']]);
         }
     }
 
@@ -62,12 +85,6 @@ class UsersController extends AppController
 
     public function add() {
 
-        $rolesTable = $this->fetchTable('roles');
-
-        $roles = $rolesTable->find('list')->toArray();
-
-        $this->set("roles", $roles);
-
         if($this->request->is('post')){
 
             $usersTable = $this->fetchTable('users');
@@ -76,7 +93,7 @@ class UsersController extends AppController
 
             $data['firstName'] = trim(strip_tags($this->request->getData('firstName')));
             $data['lastName'] = trim(strip_tags($this->request->getData('lastName')));
-            $data['roleId'] = $this->request->getData('role_id');
+            $data['role_id'] = 2;
             $data['username'] = trim(strip_tags($this->request->getData('email')));
             $data['password'] = $this->request->getData('password');
 

@@ -70,7 +70,7 @@ class InvestmentsController extends AppController
 
         //getting shared likes
         $investmentSharesTable = $this->fetchTable('investmentshares')->find()
-        ->contain(['users','investments','investments.tickers'])
+        ->contain(['users','investments','investments.tickers','investments.users'])
         ->where(['investmentshares.user_id' => $this->loggedInUser->id])
         ->all();
 
@@ -117,7 +117,7 @@ class InvestmentsController extends AppController
 
                 $this->Flash->success("The Investment has been saved.");
 
-                $this->log('Investment Added Succesfully!','info', ['scope' => ['investment']]);
+                $this->log('Investment Added Succesfully!, User: '.$this->loggedInUser->email.', User ID: '.$this->loggedInUser->id.', IP Address: '.$_SERVER['REMOTE_ADDR'].', Investment ID: '.$newInvestment->id,'info', ['scope' => ['investment']]);
 
                 return $this->redirect(['action' => 'index']);
                 
@@ -129,7 +129,7 @@ class InvestmentsController extends AppController
                     $error_messages .= array_values($value)[0]."<br>";
                 }
 
-                $this->log("Failed To Add Investment!",'error', ['scope' => ['investment']]);
+                $this->log('Failed To Add Investment!, User: '.$this->loggedInUser->email.', User ID: '.$this->loggedInUser->id.', IP Address: '.$_SERVER['REMOTE_ADDR'],'error', ['scope' => ['investment']]);
         
                 $this->Flash->error("Something wrong happened<br>$error_messages", ['escape' => false]);
             }
@@ -138,6 +138,8 @@ class InvestmentsController extends AppController
     }
 
     public function edit($id){
+
+        //Edits an investment
         $tickersTable = $this->fetchTable('tickers');
         $tickers = $tickersTable->find('list')->toArray();
 
@@ -164,7 +166,7 @@ class InvestmentsController extends AppController
 
                 $this->Flash->success("The Investment has been updated.");
 
-                return $this->redirect(['action' => 'add']);
+                return $this->redirect(['action' => 'my_investments']);
                 
             }else{
                 $errors = $investmentToEdit->getErrors();
@@ -177,7 +179,7 @@ class InvestmentsController extends AppController
                 $this->Flash->error("Something wrong happened<br>$error_messages", ['escape' => false]);
             }
 
-            return $this->redirect(['action' => 'homepage']);
+            return $this->redirect(['action' => 'my_investments']);
         }
 
     }
@@ -197,7 +199,7 @@ class InvestmentsController extends AppController
 
         if($query != null){
 
-            $this->log('Couldn\'t add like','error', ['scope' => ['like']]);
+            $this->log('Couldn\'t add like, User: '.$this->loggedInUser->email.', User ID: '.$this->loggedInUser->id.', IP Address: '.$_SERVER['REMOTE_ADDR'].', Investment ID: '.$investmentID,'error', ['scope' => ['like']]);
 
             $this->Flash->error("Like Already Exists!");
 
@@ -206,14 +208,14 @@ class InvestmentsController extends AppController
 
         if($likesTable->save($newlike)){
 
-            $this->log('Like Added Succesfully!','info', ['scope' => ['like']]);
+            $this->log('Like Added Succesfully!, User: '.$this->loggedInUser->email.', User ID: '.$this->loggedInUser->id.', IP Address: '.$_SERVER['REMOTE_ADDR'].', Investment ID: '.$investmentID,'info', ['scope' => ['like']]);
 
             $this->Flash->success("The Like has been added.");
 
             return $this->redirect(['action' => 'homepage']);
             
         }else {
-            $this->log('Couldn\'t add like','error', ['scope' => ['like']]);
+            $this->log('Couldn\'t add like, User: '.$this->loggedInUser->email.', User ID: '.$this->loggedInUser->id.', IP Address: '.$_SERVER['REMOTE_ADDR'].', Investment ID: '.$investmentID,'error', ['scope' => ['like']]);
 
             $this->Flash->error("Couldn't add like");
         }
@@ -313,7 +315,7 @@ class InvestmentsController extends AppController
         else
             $this->Flash->error("Cannot delete Investment!");
 
-        return $this->redirect(['action' => "index"]);
+        return $this->redirect(['action' => "my_investments"]);
     }
 
 

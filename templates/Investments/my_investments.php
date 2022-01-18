@@ -4,9 +4,6 @@ echo '<h1 class="text-center">Your Investments: '.count($allInvestments).'</h1>'
 
 echo '<hr>';
 
-//pr($allInvestments);
-//die;
-
 echo '<div class="row row-cols-1 row-cols-md-4 g-4">';
 
     foreach($allInvestments as $investment){
@@ -67,6 +64,7 @@ echo '<div class="row row-cols-1 row-cols-md-4 g-4">';
 
                             $editLink = $this->Url->build("/investments/edit/".$investment->id);
                             echo '<a href="'.$editLink.'" class="btn btn-warning ms-2">Edit</a>';
+
                         }
 
                     echo '</div>';

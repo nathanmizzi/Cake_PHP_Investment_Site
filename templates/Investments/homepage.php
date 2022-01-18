@@ -6,9 +6,6 @@
 
 if(isset($tickers)){
 
-     //pr($tickers); 
-     //die; 
-
     ?>
 
     <?= $this->Form->create(null, ['enctype' => 'multipart/form-data']); ?>
@@ -53,33 +50,9 @@ if(isset($tickers)){
 
     <?= $this->Form->end();?>
 
-    <?php
+    <div class="" id="invCards">
 
-    $viewTrades = $this->Url->build("/investments/index");
-    echo '<button href="'.$viewTrades.'" onclick="showInvestments()" class="btn btn-primary">View Trades</button>';
-
-    ?>
-
-    <script>
-        var show = false;
-
-        function showInvestments(){
-            show = !show;
-
-            var invCards = document.getElementById('invCards');
-
-            if(show){
-                invCards.classList.remove("d-none");
-            }else{
-                invCards.classList.add("d-none");
-            }
-
-        }
-    </script>
-
-    <div class="d-none" id="invCards">
-
-        <h2 class="text-center">Your Trades</h2>
+        <h2 class="text-center mt-3">Accessible Investments:</h2>
 
         <hr>
 
@@ -97,6 +70,9 @@ if(isset($tickers)){
                             echo '<div class="card-body">';
                         
                                 echo '<h5 class="card-title text-center">'.$investment->ticker->ticker_name.'</h5>';
+
+                                echo "<hr>";
+
                                 echo '<p class="card-text">Shares: '.$investment->shares.' at $'.$investment->boughtAt.'</p>';
                                 echo '<p class="card-text">Total Spent: $'.$totalSpent.'</p>';
                                 echo '<hr>';
@@ -146,8 +122,6 @@ if(isset($tickers)){
 
                                     $editLink = $this->Url->build("/investments/edit/".$investment->id);
                                     echo '<a href="'.$editLink.'" class="btn btn-warning ms-2">Edit</a>';
-
-
 
                                     if($investment->privacy == 1){
 
@@ -227,10 +201,10 @@ if(isset($tickers)){
                                 echo '<p class="card-text bg bg-gray">Added On: '.$dateParsed.'</p>';
                             
                                 if($loggedInUser->role_id == 1){
-                                    $getInvestmentsLink = $this->Url->build("/investments/get_user_investments/".$investment->user->id);
-                                    echo '<a href="'.$getInvestmentsLink.'" class="btn btn-danger"><p class="card-text bg bg-gray">Trade Owner: '.$investment->user->firstName.' '.$investment->user->lastName.'</p></a>';
+                                    $getInvestmentsLink = $this->Url->build("/investments/get_user_investments/".$sharedInvestment->investment->user->id);
+                                    echo '<a href="'.$getInvestmentsLink.'" class="btn btn-danger"><p class="card-text bg bg-gray">Trade Owner: '.$sharedInvestment->investment->user->firstName.' '.$sharedInvestment->investment->user->lastName.'</p></a>';
                                 }else{
-                                    echo '<p class="card-text bg bg-gray">Trade Owner: '.$investment->user->firstName.' '.$investment->user->lastName.'</p>';
+                                    echo '<p class="card-text bg bg-gray">Trade Owner: '.$sharedInvestment->investment->user->firstName.' '.$sharedInvestment->investment->user->lastName.'</p>';
                                 }
 
                                 echo '<hr>';

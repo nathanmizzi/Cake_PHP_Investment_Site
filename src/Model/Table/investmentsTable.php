@@ -11,8 +11,6 @@ class investmentsTable extends Table{
     public function validationDefault(Validator $validator): Validator
     {
         $validator
-            ->requirePresence('user_id', 'User Id is required!')
-            ->requirePresence('ticker_id')
             ->notBlank('ticker_id', 'Ticker is required')
             ->requirePresence('shares')
             ->notBlank('shares', 'Shares ammount required!')
@@ -40,8 +38,9 @@ class investmentsTable extends Table{
 
         $this->belongsTo('tickers');
         $this->belongsTo('users');
-        $this->hasMany('investmentshares');
-        $this->hasMany('likes');
+
+        $this->hasMany('investmentshares' , ['dependent' => true, 'cascadeCallbacks' => true]);
+        $this->hasMany('likes', ['dependent' => true, 'cascadeCallbacks' => true]);
 
         $this->addBehavior('Timestamp', [
             'events' => [
